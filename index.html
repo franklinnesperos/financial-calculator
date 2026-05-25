@@ -26,22 +26,25 @@
         .total-container { background: linear-gradient(135deg, #1e293b, #0f172a); padding: 20px; border-radius: 12px; text-align: center; margin-top: 20px; color: white; }
         .total-container h3 { margin: 0; color: #94a3b8; font-size: 13px; text-transform: uppercase; }
         .total-amount { font-size: 36px; font-weight: 700; color: #38bdf8; margin: 8px 0 0 0; font-family: monospace; }
+        .explain-box { background: #fcf8e3; border: 1px solid #faebcc; border-radius: 10px; padding: 15px; margin-top: 15px; font-size: 13px; color: #8a6d3b; line-height: 1.5; }
+        .explain-box strong { color: #66512c; }
         .btn-clear-all { width: 100%; padding: 12px; background: #f1f5f9; border: none; border-radius: 8px; font-weight: 700; color: #64748b; font-size: 14px; cursor: pointer; margin-top: 15px; }
-        .info-badge { font-size: 11px; color: #64748b; text-align: center; margin-top: 15px; }
     </style>
 </head>
 <body>
 <div class="calc-wrapper">
     <div class="app-title"><h2>Financial Calculator</h2><p>Independent Ledger Tool</p></div>
+    
     <div class="group-box">
         <div class="group-title">Base Amounts</div>
         <div class="input-row"><label>Principal Amount:</label><div class="input-wrapper"><input type="number" id="principal" placeholder="0.00" oninput="runComputation()"></div></div>
         <div class="input-row"><label>Interest Amount:</label><div class="input-wrapper"><input type="number" id="interest" placeholder="0.00" oninput="runComputation()"></div></div>
     </div>
+    
     <div class="group-box">
         <div class="group-title">Other Charges (Deductions)</div>
         <div class="input-row"><label>Processing Fee:</label><div class="input-wrapper"><input type="number" id="feeProcessing" placeholder="0.00" oninput="runComputation()"></div></div>
-        <div class="input-row"><label>A.D:</label><div class="input-wrapper"><input type="number" id="feeAD" placeholder="0.00" oninput="runComputation()"></div></div>
+        <div class="input-row"><label>Advance Collection:</label><div class="input-wrapper"><input type="number" id="feeAdvance" placeholder="0.00" oninput="runComputation()"></div></div>
         <div class="input-row"><label>Penalty:</label><div class="input-wrapper"><input type="number" id="feePenalty" placeholder="0.00" oninput="runComputation()"></div></div>
         <div class="input-row"><label>Overdue:</label><div class="input-wrapper"><input type="number" id="feeOverdue" placeholder="0.00" oninput="runComputation()"></div></div>
         <div class="input-row"><label>Tapal:</label><div class="input-wrapper"><input type="number" id="feeTapal" placeholder="0.00" oninput="runComputation()"></div></div>
@@ -49,28 +52,52 @@
         <div class="input-row"><label>Other Charge 2:</label><div class="input-wrapper"><input type="number" id="feeOther2" placeholder="0.00" oninput="runComputation()"></div></div>
         <div class="subtotal-row"><span>Total Other Charges:</span><span id="subtotalCharges" class="subtotal-amount">₱0.00</span></div>
     </div>
+    
     <div class="total-container"><h3>Grand Total Result</h3><p class="total-amount" id="grandTotalOutput">₱0.00</p></div>
+    
+    <div class="explain-box" id="explainOutput">
+        Mag-input ng mga numero sa itaas para makita ang sunod-sunod na paliwanag ng computation dito.
+    </div>
+    
     <button class="btn-clear-all" onclick="resetForm()">Reset Calculator</button>
-    <div class="info-badge">Computation Rule: (Principal - Total Other Charges) + Interest</div>
 </div>
+
 <script>
+    function formatMoney(num) {
+        return "₱" + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     function runComputation() {
         const p = parseFloat(document.getElementById('principal').value) || 0;
         const i = parseFloat(document.getElementById('interest').value) || 0;
+        
         const proc = parseFloat(document.getElementById('feeProcessing').value) || 0;
-        const ad = parseFloat(document.getElementById('feeAD').value) || 0;
+        const adv = parseFloat(document.getElementById('feeAdvance').value) || 0;
         const pen = parseFloat(document.getElementById('feePenalty').value) || 0;
         const ovr = parseFloat(document.getElementById('feeOverdue').value) || 0;
         const tap = parseFloat(document.getElementById('feeTapal').value) || 0;
         const o1 = parseFloat(document.getElementById('feeOther1').value) || 0;
         const o2 = parseFloat(document.getElementById('feeOther2').value) || 0;
-        const totalDeductions = proc + ad + pen + ovr + tap + o1 + o2;
-        const finalResult = (p - totalDeductions) + i;
-        document.getElementById('subtotalCharges').innerText = "₱" + totalDeductions.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        document.getElementById('grandTotalOutput').innerText = "₱" + finalResult.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        
+        const totalDeductions = proc + adv + pen + ovr + tap + o1 + o2;
+        const principalNet = p - totalDeductions;
+        const finalResult = principalNet + i;
+        
+        document.getElementById('subtotalCharges').innerText = formatMoney(totalDeductions);
+        document.getElementById('grandTotalOutput').innerText = formatMoney(finalResult);
+        
+        // Paggawa ng dynamic na paliwanag para sa gumagamit
+        let explanation = "<strong>Live Computation Breakdown:</strong><br>";
+        explanation += `1. Ang kabuuang bawas (Other Charges) ay <strong>${formatMoney(totalDeductions)}</strong>.<br>`;
+        explanation += `2. Mula sa Principal na ${formatMoney(p)}, ibinawas ang charges kaya ang natira na lang ay <strong>${formatMoney(principalNet)}</strong>.<br>`;
+        explanation += `3. Pagkatapos, idinagdag ang Interest na ${formatMoney(i)} para sa huling resulta na <strong>${formatMoney(finalResult)}</strong>.`;
+        
+        document.getElementById('explainOutput').innerHTML = explanation;
     }
+
     function resetForm() {
         document.querySelectorAll('input[type="number"]').forEach(input => input.value = "");
+        document.getElementById('explainOutput').innerHTML = "Mag-input ng mga numero sa itaas para makita ang sunod-sunod na paliwanag ng computation dito.";
         runComputation();
     }
     window.onload = runComputation;
