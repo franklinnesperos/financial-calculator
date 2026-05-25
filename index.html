@@ -91,3 +91,15 @@
         explanation += `2. Mula sa Principal na ${formatMoney(p)}, ibinawas ang charges kaya ang natira na lang ay <strong>${formatMoney(principalNet)}</strong>.<br>`;
         explanation += `3. Pagkatapos, idinagdag ang Interest na ${formatMoney(i)} para sa huling resulta na <strong>${formatMoney(finalResult)}</strong>.`;
         
+        document.getElementById('explainOutput').innerHTML = explanation;
+    }
+
+    function resetForm() {
+        document.querySelectorAll('input[type="number"]').forEach(input => input.value = "");
+        document.getElementById('explainOutput').innerHTML = "Mag-input ng mga numero sa itaas para makita ang sunod-sunod na paliwanag ng computation dito.";
+        runComputation();
+    }
+    window.onload = runComputation;
+</script>
+</body>
+</html>
