@@ -5,39 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Financial Ledger Calculator</title>
     <style>
-        :root { 
-            --primary-color: #2c3e50; 
-            --accent-color: #2980b9; 
-            --green: #27ae60; 
-            --red: #c0392b; 
-            --bg-light: #ecf0f1; 
-        }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background: #f5f7fa; 
-            margin: 0; 
-            padding: 15px; 
-            display: flex; 
-            justify-content: center; 
-        }
-        .calc-wrapper { 
-            background: white; 
-            width: 100%; 
-            max-width: 440px; 
-            padding: 20px; 
-            border-radius: 16px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
-            box-sizing: border-box; 
-        }
-        
-        .app-title { 
-            text-align: center; 
-            margin-bottom: 25px; 
-            border-bottom: 1px solid #e2e8f0; 
-            padding-bottom: 15px; 
-        }
-        .app-title h2 { 
-            color: var(--primary-color); 
-            margin: 0; 
-            font-size: 22px;
-          
+        :root { --primary-color: #2c3e50; --accent-color: #2980b9; --green: #27ae60; --red: #c0392b; --bg-light: #ecf0f1; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #f5f7fa; margin: 0; padding: 15px; display: flex; justify-content: center; }
+        .calc-wrapper { background: white; width: 100%; max-width: 440px; padding: 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); box-sizing: border-box; }
+        .app-title { text-align: center; margin-bottom: 25px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; }
+        .app-title h2 { color: var(--primary-color); margin: 0; font-size: 22px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        .app-title p { margin: 5px 0 0 0; color: #7f8c8d; font-size: 12px; }
+        .group-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+        .group-title { font-size: 13px; font-weight: 700; color: var(--accent-color); margin-bottom: 12px; text-transform: uppercase; }
+        .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .input-row:last-child { margin-bottom: 0; }
+        .input-row label { font-weight: 600; font-size: 14px; color: #34495e; width: 45%; }
+        .input-wrapper { position: relative; width: 55%; }
+        .input-wrapper::before { content: "₱"; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-weight: 600; color: #7f8c8d; }
+        input[type="number"] { width: 100%; padding: 10px 10px 10px 28px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; background: #f8fafc; box-sizing: border-box; font-weight: 600; color: #1e293b; }
+        input[type="number"]:focus { border-color: var(--accent-color); background: #fff; outline: none; }
+        .total-container { background: linear-gradient(135deg, #1e293b, #0f172a); padding: 20px; border-radius: 12px; text-align: center; margin-top: 20px; color: white; }
+        .total-container h3 { margin: 0; color: #94a3b8; font-size: 13px; text-transform: uppercase; }
+        .total-amount { font-size: 36px; font-weight: 700; color: #38bdf8; margin: 8px 0 0 0; font-family: monospace; }
+        .btn-clear-all { width: 100%; padding: 12px; background: #f1f5f9; border: none; border-radius: 8px; font-weight: 700; color: #64748b; font-size: 14px; cursor: pointer; margin-top: 15px; }
+        .info-badge { font-size: 11px; color: #64748b; text-align: center; margin-top: 15px; }
+    </style>
+</head>
+<body>
+<div class="calc-wrapper">
+    <div class="app-title"><h2>Financial Calculator</h2><p>Independent Ledger Tool</p></div>
+    <div class="group-box">
+        <div class="group-title">Base Amounts</div>
+        <div class="input-row"><label>Principal Amount:</label><div class="input-wrapper"><input type="number" id="principal" placeholder="0.00" oninput="runComputation()"></div></div>
+        <div class="input-row"><label>Interest Amount:</label><div class="input-wrapper"><input type="number" id="interest" placeholder="0.00" oninput="runComputation()"></div></div>
+    </div>
+    <div class="group-box">
+        <div class="group-title">Other Charges (Deductions)</div>
+        <div class="input-row"><label>Processing Fee:</label><div class="input-wrapper"><input type="number" id="feeProcessing" placeholder="0.00" oninput="runComputation()"></div></div>
+        <div class="input-row"><label>A.D:</label><div class="input-wrapper"><input type="number" id="feeAD" placeholder="0.00" oninput="runComputation()"></div></div>
+        <div class="input-row"><label>Penalty:</label><div class="input-wrapper"><input type="number" id="feePenalty" placeholder="0.00" oninput="runComputation()"></div></div>
+        <div class="input-row"><label>Overdue:</label><div class="input-wrapper"><input type="number" id="feeOverdue" placeholder="0.00" oninput="runComputation()"></div></div>
+        <div class="input-row"><label>Tapal:</label><div class="input-wrapper"><input type="number" id="feeTapal" placeholder="0.00" oninput="runComputation()"></div></div>
+    </div>
+    <div class="total-container"><h3>Grand Total Result</h3><p class="total-amount" id="grandTotalOutput">₱0.00</p></div>
+    <button class="btn-clear-all" onclick="resetForm()">Reset Calculator</button>
+    <div class="info-badge">Computation Rule: (Principal - Total Other Charges) + Interest</div>
+</div>
+<script>
+    function runComputation() {
+        const p = parseFloat(document.getElementById('principal').value) || 0;
+        const i = parseFloat(document.getElementById('interest').value) || 0;
+        const proc = parseFloat(document.getElementById('feeProcessing').value) || 0;
+        const ad = parseFloat(document.getElementById('feeAD').value) || 0;
+        const pen = parseFloat(document.getElementById('feePenalty').value) || 0;
+        const ovr = parseFloat(document.getElementById('feeOverdue').value) || 0;
+        const tap = parseFloat(document.getElementById('feeTapal').value) || 0;
+        const totalDeductions = proc + ad + pen + ovr + tap;
+        const finalResult = (p - totalDeductions) + i;
+        document.getElementById('grandTotalOutput').innerText = "₱" + finalResult.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+    function resetForm() {
+        document.querySelectorAll('input[type="number"]').forEach(input => input.value = "");
+        runComputation();
+    }
+    window.onload = runComputation;
+</script>
+</body>
+</html>
