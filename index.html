@@ -47,9 +47,9 @@
         <div class="input-row"><label>Advance Collection:</label><div class="input-wrapper"><input type="number" id="feeAdvance" placeholder="0.00" oninput="runComputation()"></div></div>
         <div class="input-row"><label>Penalty:</label><div class="input-wrapper"><input type="number" id="feePenalty" placeholder="0.00" oninput="runComputation()"></div></div>
         <div class="input-row"><label>Overdue:</label><div class="input-wrapper"><input type="number" id="feeOverdue" placeholder="0.00" oninput="runComputation()"></div></div>
-        <div class="input-row"><label>Tapal:</label><div class="input-wrapper"><input type="number" id="feeTapal" placeholder="0.00" oninput="runComputation()"></div></div>
         <div class="input-row"><label>Other Charge 1:</label><div class="input-wrapper"><input type="number" id="feeOther1" placeholder="0.00" oninput="runComputation()"></div></div>
         <div class="input-row"><label>Other Charge 2:</label><div class="input-wrapper"><input type="number" id="feeOther2" placeholder="0.00" oninput="runComputation()"></div></div>
+        <div class="input-row"><label>Other Charge 3:</label><div class="input-wrapper"><input type="number" id="feeOther3" placeholder="0.00" oninput="runComputation()"></div></div>
         <div class="subtotal-row"><span>Total Other Charges:</span><span id="subtotalCharges" class="subtotal-amount">₱0.00</span></div>
     </div>
     
@@ -75,32 +75,19 @@
         const adv = parseFloat(document.getElementById('feeAdvance').value) || 0;
         const pen = parseFloat(document.getElementById('feePenalty').value) || 0;
         const ovr = parseFloat(document.getElementById('feeOverdue').value) || 0;
-        const tap = parseFloat(document.getElementById('feeTapal').value) || 0;
         const o1 = parseFloat(document.getElementById('feeOther1').value) || 0;
         const o2 = parseFloat(document.getElementById('feeOther2').value) || 0;
+        const o3 = parseFloat(document.getElementById('feeOther3').value) || 0;
         
-        const totalDeductions = proc + adv + pen + ovr + tap + o1 + o2;
+        const totalDeductions = proc + adv + pen + ovr + o1 + o2 + o3;
         const principalNet = p - totalDeductions;
         const finalResult = principalNet + i;
         
         document.getElementById('subtotalCharges').innerText = formatMoney(totalDeductions);
         document.getElementById('grandTotalOutput').innerText = formatMoney(finalResult);
         
-        // Paggawa ng dynamic na paliwanag para sa gumagamit
         let explanation = "<strong>Live Computation Breakdown:</strong><br>";
         explanation += `1. Ang kabuuang bawas (Other Charges) ay <strong>${formatMoney(totalDeductions)}</strong>.<br>`;
         explanation += `2. Mula sa Principal na ${formatMoney(p)}, ibinawas ang charges kaya ang natira na lang ay <strong>${formatMoney(principalNet)}</strong>.<br>`;
         explanation += `3. Pagkatapos, idinagdag ang Interest na ${formatMoney(i)} para sa huling resulta na <strong>${formatMoney(finalResult)}</strong>.`;
         
-        document.getElementById('explainOutput').innerHTML = explanation;
-    }
-
-    function resetForm() {
-        document.querySelectorAll('input[type="number"]').forEach(input => input.value = "");
-        document.getElementById('explainOutput').innerHTML = "Mag-input ng mga numero sa itaas para makita ang sunod-sunod na paliwanag ng computation dito.";
-        runComputation();
-    }
-    window.onload = runComputation;
-</script>
-</body>
-</html>
